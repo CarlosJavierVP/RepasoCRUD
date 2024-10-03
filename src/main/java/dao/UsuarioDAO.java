@@ -3,11 +3,18 @@ package dao;
 import models.Usuario;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioDAO implements DAO<Usuario> {
+    public static final String SELECT_FROM_EJ = "select * from ej";
+    public static final String INSERT_INTO_EJ = "insert into ej(email, pass, admin)values(?, ?, ?, ?)";
+    public static final String UPDATE_EJ = "update ej set email=?, pass=?, admin=? where id=?";
+    public static final String DELETE_FROM_EJ = "delete from ej where id=?";
+    public static final String SELECT_FROM_EJ_WHERE_ID = "select * from ej where id=?";
 
     private static Connection con = null;
 
@@ -18,30 +25,85 @@ public class UsuarioDAO implements DAO<Usuario> {
         var lista = new ArrayList<Usuario>();
         try {
             var st = con.createStatement();
+            ResultSet rs = st.executeQuery(SELECT_FROM_EJ);
+
+           while (rs.next()){
+               Usuario user = new Usuario();
+               user.setId(rs.getInt("id"));
+               user.setEmail(rs.getString("email"));
+               user.setPass(rs.getString("password"));
+               user.setAdmin(rs.getBoolean("is_admin"));
+               lista.add(user);
+           }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-        return
+        return lista;
     }
 
     @Override
     public Usuario findById(Integer id) {
-        return null;
+        Usuario user = null;
+        try (PreparedStatement ps = con.prepareStatement(SELECT_FROM_EJ_WHERE_ID)){
+            ps.setInt(1,id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()){
+                user = new Usuario();
+                user.setId(rs.getInt("id"));
+                user.setEmail(rs.getString("email"));
+                user.setPass(rs.getString("password"));
+                user.setAdmin(rs.getBoolean("is_admin"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return user;
     }
 
     @Override
     public void save(Usuario usuario) {
+        try(PreparedStatement ps = con.prepareStatement(INSERT_INTO_EJ)){
+            ps.setString(1,usuario.getEmail());
+            ps.setString(2,usuario.getPass());
+            ps.setBoolean(3,usuario.isAdmin());
 
+            if (ps.executeUpdate() ==1){
+                ResultSet rs = ps.getGeneratedKeys();
+                rs.next();
+                usuario.setId(rs.getInt(1));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void update(Usuario usuario) {
+        try(PreparedStatement ps = con.prepareStatement(UPDATE_EJ)){
+            ps.setString(1,usuario.getEmail());
+            ps.setString(2,usuario.getPass());
+            ps.setBoolean(3,usuario.isAdmin());
+            ps.setInt(4,usuario.getId());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @Override
     public void delete(Usuario usuario) {
+        try(PreparedStatement ps = con.prepareStatement(DELETE_FROM_EJ)){
+           ps.setInt(1,usuario.getId());
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }

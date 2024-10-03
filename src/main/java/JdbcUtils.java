@@ -8,7 +8,7 @@ public class JdbcUtils {
 
     static {
         String url = "jdbc:mysql://localhost:3306/ej";
-        String user ="carlos";
+        String user ="root";
         //definir la variable de desarrollo
         String pass = System.getenv("MYSQL_ROOT_PASSWORD");
         try {
