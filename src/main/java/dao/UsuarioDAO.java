@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioDAO implements DAO<Usuario> {
-    public static final String SELECT_FROM_EJ = "select * from ej";
-    public static final String INSERT_INTO_EJ = "insert into ej(email, pass, admin)values(?, ?, ?, ?)";
-    public static final String UPDATE_EJ = "update ej set email=?, pass=?, admin=? where id=?";
-    public static final String DELETE_FROM_EJ = "delete from ej where id=?";
-    public static final String SELECT_FROM_EJ_WHERE_ID = "select * from ej where id=?";
+    public static final String SELECT_FROM_EJ = "select * from usuario";
+    public static final String INSERT_INTO_EJ = "insert into usuario(email, password, is_admin)values(?, ?, ?, ?)";
+    public static final String UPDATE_EJ = "update usuario set email=?, password=?, is_admin=? where id=?";
+    public static final String DELETE_FROM_EJ = "delete from usuario where id=?";
+    public static final String SELECT_FROM_EJ_WHERE_ID = "select * from usuario where id=?";
 
     private static Connection con = null;
 
@@ -66,7 +66,7 @@ public class UsuarioDAO implements DAO<Usuario> {
         try(PreparedStatement ps = con.prepareStatement(INSERT_INTO_EJ)){
             ps.setString(1,usuario.getEmail());
             ps.setString(2,usuario.getPass());
-            ps.setBoolean(3,usuario.isAdmin());
+            ps.setBoolean(3,usuario.getAdmin());
 
             if (ps.executeUpdate() ==1){
                 ResultSet rs = ps.getGeneratedKeys();
@@ -84,7 +84,7 @@ public class UsuarioDAO implements DAO<Usuario> {
         try(PreparedStatement ps = con.prepareStatement(UPDATE_EJ)){
             ps.setString(1,usuario.getEmail());
             ps.setString(2,usuario.getPass());
-            ps.setBoolean(3,usuario.isAdmin());
+            ps.setBoolean(3,usuario.getAdmin());
             ps.setInt(4,usuario.getId());
 
             ps.executeUpdate();

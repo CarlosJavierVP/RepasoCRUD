@@ -10,6 +10,6 @@ public class Usuario implements Serializable {
     private Integer id;
     private String email;
     private String pass;
-    private boolean admin;
+    private Boolean admin;
 
 }
