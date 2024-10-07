@@ -2,10 +2,7 @@ package dao;
 
 import models.Usuario;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +60,7 @@ public class UsuarioDAO implements DAO<Usuario> {
 
     @Override
     public void save(Usuario usuario) {
-        try(PreparedStatement ps = con.prepareStatement(INSERT_INTO_EJ)){
+        try(PreparedStatement ps = con.prepareStatement(INSERT_INTO_EJ, Statement.RETURN_GENERATED_KEYS)){
             ps.setString(1,usuario.getEmail());
             ps.setString(2,usuario.getPass());
             ps.setBoolean(3,usuario.getAdmin());
